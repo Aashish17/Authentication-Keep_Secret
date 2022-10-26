@@ -5,6 +5,8 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose")
 const md5= require("md5")
+const bcrypt= require("bcrypt")
+const saltRounds = 10
 
 
 
@@ -40,49 +42,58 @@ app.get("/register", function(req,res)
 	res.render("register.ejs");   
 })
 
- 
+
 app.post("/register",function(req, res)
 {
-	const newUser = User({
-		email: req.body.username,
-		password: md5(req.body.password) 
-	})
 
-	newUser.save(function(err)
-	{
-		if(err)
-		{
-			console.log(err)
-		}
-		else
-		{
-			res.render("secrets")
-		}
-	})
+	bcrypt.hash(req.body.password , saltRounds, function(err, hash) {
+    // Store hash in your password DB.
+
+    const newUser = User({
+    	email: req.body.username ,
+    	password: hash
+    })
+
+    newUser.save(function(err)
+    {
+    	if(err)
+    	{
+    		console.log(err)
+    	}
+    	else
+    	{
+    		res.render("secrets")
+    	}
+    })
+});
+
+	
 })
 
 app.post("/login", function(req , res)
 {
 	const username= req.body.username;
-	const password = md5(req.body.password);
+	const password =req.body.password;
 
 	User.findOne({email:username},  function(err, foundUser){
 		if(err)
 		{
 			console.log(err);
-			res.render("register")
+			
 		}
 		else if(foundUser)
 		{
-			if(foundUser.password=== password)
+			bcrypt.compare(password, foundUser.password, function(err, result) 
 			{
+    
+    				res.render("secrets")
 
-				res.render("secrets")
-			}
+			});
+			
 		}
 	})
 })
- 
+
 app.listen("3000", function() 
 {
 	console.log("Port is working");
