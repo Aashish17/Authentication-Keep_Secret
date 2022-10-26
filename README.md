@@ -2,3 +2,4 @@
 A secret Kepper is made using EJS, Node.js, MongoDB, and Mongoose.<br /> 
 Authentication is done so the user can sign in and register using Email, Password, and DB made on MongoDB. <br />
 Level - 3 Encryption:- Password Hashing is done to keep the user password encrypted using the md5 npm package.
+Updated Security to Level-4- Used Salting and Hashing to Secure Password. Bcrypt npm package is used.
